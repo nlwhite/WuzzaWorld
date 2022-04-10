@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>A Place</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='style.css')}}"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+      crossorigin=""
+    />
+
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script
+      src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+      integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    {%if name %}
+    <span class="message">Hello there, {{ name }}!</span>
+    {% endif %} It's {{ date.strftime("%A, %d %B, %Y at %X") }}.
+
+    <div id="map"></div>
+
+    <script>
+      var map = L.map('map').setView([43.54, -80.25], 13);
+
+      L.tileLayer(
+        'https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}',
+        {
+          attribution:
+            'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+          subdomains: 'abcd',
+          minZoom: 1,
+          maxZoom: 18,
+          ext: 'png',
+        }
+      ).addTo(map);
+
+
+      var sts = {{ streets|safe }}
+      console.log(sts)
+
+      var streets = L.geoJSON(sts).addTo(map);
+
+      map.fitBounds(streets.getBounds());
+    </script>
+
+    <script src="{{ url_for('static', filename='main.js')}}"></script>
+  </body>
+</html>
